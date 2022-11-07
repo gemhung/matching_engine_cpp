@@ -1,34 +1,62 @@
-#include <iostream>
-#include <tuple>
 #include <type_traits>
-using namespace std;
+#include <utility>
+#include <iostream>
+#include <climits>
 
-template<size_t...I>
-struct Vec{};
+using namespace std;
+// DEFINITION: Compile-time integer vector defined as: 
+template<int...I>
+struct Vector{};
 
 template<class...Types>
 struct zip ;
 
-template<size_t...I, size_t...J, class...Types>
-struct zip<Vec<I...>, Vec<J...>, Types...> {
-    using type = typename zip<Vec<(I*J)...>, Types...>::type;
+template<int...I, int...J, class...Types>
+struct zip<Vector<I...>, Vector<J...>, Types...> {
+    using type = typename zip<Vector<(I*J)...>, Types...>::type;
 };
 
-template<size_t...I>
-struct zip<Vec<I...>> {
-    using type = Vec<I...>;
+// template specialization for zip<Vector<...>>
+template<int...I>
+struct zip<Vector<I...>> {
+    using type = Vector<I...>;
 };
 
+// The code below will assume a 'zip' metafunction is used, but feel free to use a different approach. 
+// If you do, please adjust the static assert accordingly. 
+
+// TEST
 int main() {
-    //std::tuple<1,2,3> t;
-    zip<Vec<1,2,3>, Vec<4,5,6>, Vec<7,8,9>, Vec<10,11,12>>::type x;
-    std::is_same<decltype(x), Vec<1*4*7*10, 2*5*8*11, 3*6*9*12>> a;
-    static_assert(a);
-
-    zip<Vec<5,6,7,8>, Vec<1,2,3,4>, Vec<9,10,11,12>>::type x2;
-    std::is_same<decltype(x2), Vec<45,120,231, 384>> a2;
-    static_assert(a2);
+    // Test case #1
+    static_assert(std::is_same<zip<Vector<1, 2, 3>, Vector<4, 5, 6>, Vector<7, 8, 9>>::type, Vector<1*4*7,2*5*8,3*6*9>>::value, "not match !");
     
-    cout<<"passed"<<endl;
+   // TASK: Add more test cases here
+    // Test case #2
+    static_assert(std::is_same<zip<Vector<1>>::type,Vector<1>>::value, "not match !");
+   
+    // Test case #2
+    static_assert(std::is_same<zip<Vector<INT_MAX>>::type,Vector<INT_MAX>>::value, "not match !");
+    
+    // Test case #2
+    static_assert(std::is_same<zip<Vector<INT_MIN>>::type,Vector<INT_MIN>>::value, "not match !");
+    
+    // Test case #2
+    static_assert(std::is_same<zip<Vector<1>, Vector<4>, Vector<7>>::type,Vector<1*4*7>>::value, "not match !");
+    
+    // Test case #3
+    static_assert(std::is_same<zip<Vector<1, 2>, Vector<4, 5>, Vector<7, 8>>::type, Vector<1*4*7,2*5*8>>::value, "not match !");
+        
+    // Test case #3
+    static_assert(std::is_same<zip<Vector<-1, -2>, Vector<4, 5>, Vector<7, 8>>::type, Vector<-1*4*7,-2*5*8>>::value, "not match !");
+    
+    // Test case #4
+    static_assert(std::is_same<zip<Vector<>>::type, Vector<>>::value, "not match !");
+    
+    // Test case #5
+    static_assert(std::is_same<zip<Vector<>, Vector<>>::type,Vector<>>::value, "not match !");
+        
+    // Test case #5
+    static_assert(std::is_same<zip<Vector<>, Vector<>, Vector<>>::type,Vector<>>::value, "not match !");
+    // TASK: Ensure it compiles before submission
     return 0;
 }
