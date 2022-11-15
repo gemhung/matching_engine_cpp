@@ -8,8 +8,6 @@
 #include <queue>
 #include <fstream>
 
-using namespace std;
-
 /*
  * Complete the 'trade' function below.
  *
@@ -20,16 +18,16 @@ using namespace std;
 using T4 = std::tuple<int, int, int, int>; // price, order_id, qty, self/other
  
  // parse is a function to parse a record and return a vector<string> where elements are like {share, (action, price, qty)...}
- auto parse(const string& record) -> vector<string>{
-    vector<string> ret;
-    istringstream iss(record);
-    string tmp;
+ auto parse(const std::string& record) -> std::vector<std::string>{
+    std::vector<std::string> ret;
+    std::istringstream iss(record);
+    std::string tmp;
     for(;getline(iss, tmp, ' ');)
         ret.push_back(tmp);
     return ret;
  }
 
-std::tuple<int, int, int> trade(vector<string> const& records) {
+std::tuple<int, int, int> trade(std::vector<std::string> const& records) {
     constexpr auto SELF = 0;
     constexpr auto OTHER = 1;
 
@@ -37,7 +35,7 @@ std::tuple<int, int, int> trade(vector<string> const& records) {
     int user_id_gen = 1; // increase whenever a new order is pushed into queue and referenced when prices are equal to have FIFO ordering
     
     // 'm' is a map<share, <bid_q, offer_q>> where 'bid_q' is a max-heap and 'offer_q' is a min-heap
-    std::unordered_map<string, std::pair<std::priority_queue<T4>, std::priority_queue<T4, vector<T4>, std::greater<T4>>>> m;
+    std::unordered_map<std::string, std::pair<std::priority_queue<T4>, std::priority_queue<T4, std::vector<T4>, std::greater<T4>>>> m;
     
     for(const auto& rec : records) {
         auto v = parse(rec);
@@ -129,7 +127,7 @@ std::tuple<int, int, int> trade(vector<string> const& records) {
 
 int main()
 {
-    ofstream fout(getenv("OUTPUT_PATH"));
+    std::ofstream fout(getenv("OUTPUT_PATH"));
 
     std::string line;
     std::vector<std::string> records;
